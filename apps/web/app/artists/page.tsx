@@ -44,137 +44,116 @@ export default function ArtistsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0e0e0f] p-4 sm:p-6 lg:p-8">
-      <h1 className="text-2xl sm:text-3xl text-white font-bold mb-6 sm:mb-8 ml-12 sm:ml-16 lg:ml-0">
-        Artists
+    <div className="min-h-screen bg-gray-100 text-gray-900 p-6">
+      <h1 className="text-3xl font-extrabold mb-8 text-center sm:text-left">
+        Featured Artists
       </h1>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-      {!loading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {artists.length === 0 && !error && (
-            <div className="col-span-full flex flex-col items-center justify-center w-full">
+
+      {error && (
+        <div className="text-red-500 text-center mb-6">{error}</div>
+      )}
+
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {artists.length === 0 ? (
+            <div className="col-span-full flex flex-col items-center justify-center">
               <img
                 src="/user.png"
                 alt="No artists"
-                className="w-20 sm:w-24 h-20 sm:h-24 rounded-full object-cover mb-4 border border-[#383838]"
+                className="w-24 h-24 rounded-full mb-4 border-2 border-gray-300"
               />
-              <span className="text-[#bdbdbd] text-base sm:text-lg">
-                No artists found.
-              </span>
+              <span className="text-gray-500 text-lg">No artists found.</span>
             </div>
-          )}
-
-          {artists.map((artist) => (
-            <article
-              key={artist.id}
-              className="group relative w-full max-w-[360px] mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-[#171718] to-[#242426] border border-[#2d2d2f] shadow-lg shadow-black/40 transform transition-all hover:scale-[1.03]"
-            >
-              {/* Image header (use <img> for reliable rendering) */}
-              <div className="relative h-40 sm:h-44 lg:h-48 w-full overflow-hidden bg-[#111]">
-                <img
-                  src={"/user1.jpg"}
-                  alt={artist.creator_name}
-                  className="absolute inset-0 w-full h-full object-cover object-center"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/user.png";
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-                <div className="absolute inset-x-0 bottom-3 flex flex-col items-center text-center px-4">
-                  <div className="text-white">
-                    <h2 className="text-lg sm:text-xl font-bold leading-tight truncate">
-                      {artist.creator_name}
-                    </h2>
-                    <div className="flex flex-wrap gap-2 justify-center mt-2">
-                      {artist.tags &&
-                        artist.tags.slice(0, 3).map((tag) => (
-                          <span
-                            key={tag}
-                            className="text-[12px] px-2 py-0.5 rounded-full bg-white/6 text-white/85"
-                          >
-                            {tag}
-                          </span>
-                        ))}
+          ) : (
+            artists.map((artist) => (
+              <div
+                key={artist.id}
+                className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300"
+              >
+                {/* Artist Header */}
+                <div className="relative h-48 w-full">
+                  <img
+                    src={artist.profile_image_url || "/user1.jpg"}
+                    alt={artist.creator_name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/user.png";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/40 to-transparent" />
+                  <div className="absolute bottom-4 left-4">
+                    <h2 className="text-xl font-bold text-gray-900">{artist.creator_name}</h2>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {artist.tags?.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                </div>
-                {/* quick status pill */}
-                <div className="absolute right-3 top-3">
                   <span
-                    className={`text-xs px-2 py-1 rounded-full font-semibold ${artist.status === "active" ? "bg-green-600 text-white" : "bg-gray-700 text-gray-200"}`}
+                    className={`absolute top-4 right-4 px-3 py-1 text-xs font-semibold rounded-full ${
+                      artist.status === "active"
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-300 text-gray-800"
+                    }`}
                   >
                     {artist.status ?? "unknown"}
                   </span>
                 </div>
-              </div>
 
-              {/* Body */}
-              <div className="p-4 sm:p-5 flex flex-col gap-3">
-                <p className="text-[13px] sm:text-sm text-[#d6d6d6] leading-relaxed max-h-[84px] overflow-y-auto custom-scrollbar">
-                  {artist.description || "No description provided."}
-                </p>
+                {/* Artist Info */}
+                <div className="p-4 flex flex-col gap-3">
+                  <p className="text-gray-700 text-sm line-clamp-3">
+                    {artist.description || "No description available."}
+                  </p>
 
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex flex-col">
-                    <span className="text-[12px] text-[#bdbdbd]">DNA</span>
-                    <strong className="text-sm text-white">
-                      {artist.dna_visibility ?? "—"}
-                    </strong>
+                  <div className="grid grid-cols-3 text-center text-gray-500 text-xs gap-2 mt-2">
+                    <div>
+                      <span className="block text-[10px]">DNA</span>
+                      <strong className="text-gray-900 text-sm">{artist.dna_visibility || "—"}</strong>
+                    </div>
+                    <div>
+                      <span className="block text-[10px]">Price</span>
+                      <strong className="text-gray-900 text-sm">
+                        {artist.price ? `$${artist.price}` : "Free"}
+                      </strong>
+                    </div>
+                    <div>
+                      <span className="block text-[10px]">License</span>
+                      <strong className="text-gray-900 text-sm">{artist.license_type || "—"}</strong>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-[12px] text-[#bdbdbd]">Price</span>
-                    <strong className="text-sm text-white">
-                      {artist.price ? `$${artist.price}` : "Free"}
-                    </strong>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[12px] text-[#bdbdbd]">License</span>
-                    <strong className="text-sm text-white">
-                      {artist.license_type ?? "—"}
-                    </strong>
-                  </div>
-                </div>
 
-                {/* Audio preview + actions */}
-                <div className="flex flex-col gap-2">
-                  {artist.audio_preview_url ? (
+                  {artist.audio_preview_url && (
                     <audio
                       controls
                       src={artist.audio_preview_url}
-                      className="w-full rounded-md bg-black/40"
+                      className="w-full rounded-md mt-2"
                     />
-                  ) : (
-                    <div className="text-[12px] text-[#8b8b8b]">
-                      No preview available
-                    </div>
                   )}
 
-                  <div className="flex items-center gap-2 mt-1">
-                    <button className="flex-1 py-2 px-3 rounded-lg bg-[#6A35EE] hover:bg-[#5a2bdc] text-white text-sm font-semibold transition">
+                  <div className="flex gap-2 mt-3">
+                    <button className="flex-1 bg-purple-500 hover:bg-purple-600 text-white py-2 rounded-lg font-semibold transition">
                       Follow
                     </button>
-                    <button className="py-2 px-3 rounded-lg bg-white/6 hover:bg-white/10 text-white text-sm">
+                    <button className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 py-2 rounded-lg transition">
                       Message
                     </button>
                   </div>
                 </div>
               </div>
-            </article>
-          ))}
+            ))
+          )}
         </div>
       )}
-
-      {/* Add custom scrollbar styling */}
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #383838;
-          border-radius: 6px;
-        }
-      `}</style>
     </div>
   );
 }
